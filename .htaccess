@@ -1,0 +1,45 @@
+# Увеличение лимитов загрузки файлов через htaccess
+php_value upload_max_filesize 150M
+php_value post_max_size 150M
+php_value memory_limit 256M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# Отключаем листинг директорий
+Options -Indexes
+
+# Устанавливаем кодировку по умолчанию
+AddDefaultCharset UTF-8
+
+# Красивая страница ошибки 404
+ErrorDocument 404 /404.php
+
+# [Не обязательно] Красивая ошибка 500
+# ErrorDocument 500 /500.php
+
+# Перенаправление http -> https (если у вас есть SSL — уберите комментарии)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Если нужно ЧПУ/роутинг через index.php (оставьте, если у вас роутинг как у frameworks или SPA)
+# RewriteEngine On
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Защита от доступа к приватным файлам и папкам
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|bak|inc|sql|conf|tpl|yml|twig)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Если ваш сервер отдаёт .php как текст, то добавьте:
+AddType application/x-httpd-php .php
+
+# Защита от "DIR traversal"
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{REQUEST_URI} \.\.
+RewriteRule . - [F]
+</IfModule>
